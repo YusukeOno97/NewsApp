@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		673C8CF3FC42E040986B3F4E /* Pods_NewaApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B76ABB2DB20760F57C7CB19A /* Pods_NewaApp.framework */; };
 		C03192BF22FFAA23008183FA /* NewsVIewControllerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03192BE22FFAA23008183FA /* NewsVIewControllerViewController.swift */; };
+		C03192C122FFBD58008183FA /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C03192C022FFBD58008183FA /* WebKit.framework */; };
 		C0D7E67622FF95F200BF6982 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D7E67522FF95F200BF6982 /* AppDelegate.swift */; };
 		C0D7E67822FF95F200BF6982 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D7E67722FF95F200BF6982 /* MainViewController.swift */; };
 		C0D7E67B22FF95F200BF6982 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C0D7E67922FF95F200BF6982 /* Main.storyboard */; };
@@ -20,6 +21,7 @@
 		773CBB479A8A7DC88F1172E8 /* Pods-NewaApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewaApp.release.xcconfig"; path = "Target Support Files/Pods-NewaApp/Pods-NewaApp.release.xcconfig"; sourceTree = "<group>"; };
 		B76ABB2DB20760F57C7CB19A /* Pods_NewaApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NewaApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C03192BE22FFAA23008183FA /* NewsVIewControllerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsVIewControllerViewController.swift; sourceTree = "<group>"; };
+		C03192C022FFBD58008183FA /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		C0D7E67222FF95F200BF6982 /* NewaApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewaApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0D7E67522FF95F200BF6982 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C0D7E67722FF95F200BF6982 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -35,6 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C03192C122FFBD58008183FA /* WebKit.framework in Frameworks */,
 				673C8CF3FC42E040986B3F4E /* Pods_NewaApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,6 +57,7 @@
 		AF60ABB1306F6B107EF8CDEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C03192C022FFBD58008183FA /* WebKit.framework */,
 				B76ABB2DB20760F57C7CB19A /* Pods_NewaApp.framework */,
 			);
 			name = Frameworks;
