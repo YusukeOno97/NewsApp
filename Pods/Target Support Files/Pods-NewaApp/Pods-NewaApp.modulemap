@@ -1,0 +1,6 @@
+framework module Pods_NewaApp {
+  umbrella header "Pods-NewaApp-umbrella.h"
+
+  export *
+  module * { export * }
+}
