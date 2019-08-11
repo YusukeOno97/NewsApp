@@ -15,6 +15,7 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     
     
     // テーブルビューのインスタンスを作成
+    
     var tableView: UITableView = UITableView()
     
    // XMLのインスタンス化(インスタンスを取得)
@@ -38,6 +39,18 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
 //    var articles= NSMutableArray()
     
     var articles: [Any] = []
+    
+    
+    // xmlに解析をかけた情報
+    var elements = NSMutableDictionary()
+    // XMLファイルのタグ情報
+    var element: String = ""
+    // XMLファイルのタイトル情報
+    var titlestring: String = ""
+    // XMLファイルのリンク情報
+    var linkString: String = ""
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,6 +75,8 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
 // 最初は隠す　今回はテーブルビューをコードで書くため、ニューズアプリが読み込まれると邪魔くさいから今回は消す　テーブルビューの作成が完了したらコメントアウトを戻す
         webView.isHidden = true
         toolBar.isHidden = true
+        
+        paseUrl()
     }
     
     
@@ -76,13 +91,49 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
         parser.parse()
         // tableViewのリロード
         tableView.reloadData()
+   
+        
         
     }
     
-
+    
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        
+        // elementNameにタグの名前が入ってくるのでelementに代入
+        element = elementName
+        // elementNameにタグの名前が入ってくるのでelementに代入
+        if element == "item"{
+        // 初期化　ディクショナリー型は[ : ] で初期化
+        elements = [:] as! NSMutableDictionary
+        titlestring = ""
+        linkString = ""
+        
+    }
+    
+}
+    
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        if element == "title" {
+            // stringにタイトルが入っているのでappend
+            titlestring.append(string)
+        } else if element == "link" {
+            linkString.append(string)
+        }
+    }
     
     
-    
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        if elementName == "title"{
+            if titlestring != "" {
+                elements.setObject(titlestring, forKey: "title" as NSCopying)
+            }
+            if linkString != "" {
+                elements.setObject(linkString, forKey: "link" as NSCopying)
+            }
+            // articlesの中にelementsを入れる
+            articles.append(elements)
+        }
+    }
     
         // セルの高さ
         func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -180,3 +231,26 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
