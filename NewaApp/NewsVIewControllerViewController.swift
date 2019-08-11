@@ -11,8 +11,10 @@ import XLPagerTabStrip
 //カリキュラムには書いていないがwebkitをインポートする必要がある
 import WebKit
 
-class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDelegate, UITableViewDataSource, XMLParserDelegate {
+class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDelegate, UITableViewDataSource, XMLParserDelegate , WKNavigationDelegate{
     
+    
+    var refreshControl: UIRefreshControl!
     
     // テーブルビューのインスタンスを作成
     
@@ -55,43 +57,71 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
        
+        
+        // refreshControllのインスタンス
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        
+       // refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         // デリゲートとので接続
         tableView.delegate = self
         tableView.dataSource = self
         
-        // perser
-        parser.delegate  = self
+     
+        
         
         
         // テーブルビューの作成
-        tableView.frame = CGRect(x: 0, y: 50, width: self.view.frame.width, height:  self.view.frame.height - 50.0)
+        tableView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height:  self.view.frame.height)
         
-        // naviationDeleegataとのせ接続
-        webView.navigationDelegate = (self as! WKNavigationDelegate)
+        // naviationDeleegataとの接続
+        webView.navigationDelegate = self
         
         
         // viewに追加
         self.view.addSubview(tableView)
+        
+        
+       
+        
 // 最初は隠す　今回はテーブルビューをコードで書くため、ニューズアプリが読み込まれると邪魔くさいから今回は消す　テーブルビューの作成が完了したらコメントアウトを戻す
         webView.isHidden = true
         toolBar.isHidden = true
         
-        paseUrl()
+      
+        paserUrl()
     }
     
     
     
-    func paseUrl(){
+    
+    @objc func refresh() {
+        // ２秒後にdelayを呼ぶ
+        perform(#selector(delay), with: nil, afterDelay: 2.0)
+        
+    }
+    
+    @objc func delay() {
+        
+        paserUrl()
+        // インジケータ終了
+        refreshControl.endRefreshing()
+    }
+    
+    
+    func paserUrl(){
         // webを読み込む時の決まり文句
         let urlTosend: URL = URL(string: url)!
         parser = XMLParser(contentsOf:urlTosend)!
         // 記事を初期化
         articles = []
+        // perser
+        parser.delegate  = self
         // 解析の実行
         parser.parse()
         // tableViewのリロード
         tableView.reloadData()
-   
+    
         
         
     }
@@ -104,7 +134,7 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
         // elementNameにタグの名前が入ってくるのでelementに代入
         if element == "item"{
         // 初期化　ディクショナリー型は[ : ] で初期化
-        elements = [:] as! NSMutableDictionary
+        elements = [:]
         titlestring = ""
         linkString = ""
         
@@ -123,7 +153,7 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     
     
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
-        if elementName == "title"{
+        if elementName == "item"{
             if titlestring != "" {
                 elements.setObject(titlestring, forKey: "title" as NSCopying)
             }
@@ -153,15 +183,17 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "Cell")
         
         
-        cell.backgroundColor = #colorLiteral(red: 0.8934076447, green: 0.3358240713, blue: 0.4006756273, alpha: 1)
+        cell.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         cell.textLabel?.font = UIFont.boldSystemFont(ofSize: 15.0)
+        
+        cell.textLabel?.text = (articles[indexPath.row] as AnyObject).value(forKey: "title")as?String
+    
         cell.textLabel?.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) // UIColor.blackでも可
         
         // 記事はurlの色ととフォント
         cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 13.0)
         cell.detailTextLabel?.textColor = UIColor.gray
-        
-        
+        cell.detailTextLabel?.text = (articles[indexPath.row] as AnyObject).value(forKey: "link")as?String
         
         return cell
         
@@ -172,9 +204,16 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     
     //セルをたっぷした時のアクション
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // 後で書く
+        // webviewを表示する
+        let linkURL = ((articles[indexPath.row] as AnyObject).value(forKey: "link") as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+                let urlStr = (linkURL?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))!
+        guard let url = URL(string: urlStr) else {
+            return
+        }
+        let urlRequest = NSURLRequest(url: url)
+        print(urlRequest)
+        webView.load(urlRequest as URLRequest)
     }
-        
    
     
    // ページの読み込み完了時に呼ばれるやつ
@@ -182,7 +221,7 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
         // tableviewを隠す
         tableView.isHidden = true
         // toolBarを表示する
-        toolBar.isHidden = true
+        toolBar.isHidden = false
         // webViewを表示する
         webView.isHidden = false
     }
@@ -191,10 +230,10 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     
     // キャンセル
     @IBAction func cancel(_ sender: Any) {
-        // tableviewを隠す
+        // tableviewを隠さない
         tableView.isHidden = false
-        // toolBarを表示する
-        toolBar.isHidden = false
+        // toolBar表示しない
+        toolBar.isHidden = true
         // webViewを表示する
         webView.isHidden = true
     }
@@ -215,7 +254,7 @@ class NewsVIewController: UIViewController, IndicatorInfoProvider, UITableViewDe
     
     
     // リロード
-    @IBAction func refresh(_ sender: Any) {
+    @IBAction func refreshpage(_ sender: Any) {
         
         webView.reload()
         
